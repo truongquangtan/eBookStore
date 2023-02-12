@@ -1,0 +1,149 @@
+﻿@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,800&display=swap');
+
+body {
+    padding: 0;
+    margin: 0;
+    background: #fff;
+    font-family: 'Montserrat', sans-serif;
+    color: #242F3F;
+    position: relative;
+}
+
+.wrapper {
+    display: flex;
+    flex-flow: row nowrap;
+    width: 100%;
+    height: 100vh;
+}
+
+.middle {
+    float: left;
+    width: 70%;
+    min-width: 450px;
+    height: 100%;
+    background-color: #fff;
+    margin: 0 auto;
+}
+
+    .middle .top {
+        position: relative;
+        height: 100px;
+        padding: 10px;
+        text-align: center;
+    }
+
+        .middle .top:after {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            display: block;
+            width: 80%;
+            height: 1px;
+            content: "";
+            transform: translate(-50%, 0);
+        }
+
+    .middle input {
+        float: left;
+        margin: 10px;
+        margin-left: 30px;
+        padding-left: 15px;
+        width: 90%;
+        display: block;
+        height: 42px;
+        border: none;
+        background-color: #eceff1;
+        border-radius: 20px;
+    }
+
+        .middle input:focus {
+            outline: none;
+        }
+
+    .middle .people {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+        .middle .people .person {
+            position: relative;
+            cursor: pointer;
+            padding: 12px 10% 5px;
+        }
+
+            .middle .people .person:after {
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                display: block;
+                width: 90%;
+                height: 1px;
+                content: "";
+                background-color: #e6e6e6;
+                transform: translate(-50%, 5px);
+            }
+
+            .middle .people .person img {
+                float: left;
+                width: 40px;
+                height: 40px;
+                margin-right: 12px;
+                border-radius: 50%;
+                -o-object-fit: cover;
+                object-fit: cover;
+            }
+
+            .middle .people .person .name {
+                font-size: 14px;
+                line-height: 22px;
+                color: #242F3F;
+                font-weight: 600;
+                display: block;
+            }
+
+            .middle .people .person .time {
+                font-family: Courier New, Courier, monospace;
+                font-size: 14px;
+                position: absolute;
+                top: 16px;
+                right: 10%;
+                padding: 0 0 5px 5px;
+                color: #999;
+            }
+
+            .middle .people .person .preview {
+                font-size: 14px;
+                display: inline-block;
+                overflow: hidden !important;
+                width: 70%;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                color: #999;
+            }
+
+            .middle .people .person.active,
+            .middle .people .person:hover {
+                background-color: #778BBB;
+            }
+
+                .middle .people .person.active span,
+                .middle .people .person:hover span {
+                    color: #fff;
+                    background: transparent;
+                }
+
+                .middle .people .person.active:after,
+                .middle .people .person:hover:after {
+                    display: none;
+                }
+
+        a {
+            text-decoration: none;
+        }
+        .navigate {
+            color: white;
+        }
+        button {
+            width: 2.5rem;
+        }
