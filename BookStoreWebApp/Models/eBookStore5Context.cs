@@ -6,15 +6,21 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace BookStoreWebApp.Models
 {
-    public partial class eBookStore3Context : DbContext
+    public partial class eBookStore5Context : DbContext
     {
-        public eBookStore3Context(DbContextOptions<eBookStore3Context> options)
+        public eBookStore5Context()
+        {
+        }
+
+        public eBookStore5Context(DbContextOptions<eBookStore5Context> options)
             : base(options)
         {
         }
 
+        public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderSum> Orders { get; set; }
+        public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<ProductImage> ProductImages { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
@@ -28,13 +34,47 @@ namespace BookStoreWebApp.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=(local);Database=eBookStore3;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("server=(local); database=eBookStore5; uid=sa; pwd=1; TrustServerCertificate=true");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
+
+            modelBuilder.Entity<Cart>(entity =>
+            {
+                entity.ToTable("cart");
+
+                entity.Property(e => e.Id)
+                    .HasMaxLength(45)
+                    .IsUnicode(false)
+                    .HasColumnName("id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasColumnName("created_at");
+
+                entity.Property(e => e.ProductId).HasColumnName("product_id");
+
+                entity.Property(e => e.Quantity).HasColumnName("quantity");
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasMaxLength(45)
+                    .IsUnicode(false)
+                    .HasColumnName("user_id");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.Carts)
+                    .HasForeignKey(d => d.ProductId)
+                    .HasConstraintName("FK_cart_products");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Carts)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_cart_users");
+            });
 
             modelBuilder.Entity<Category>(entity =>
             {
@@ -55,7 +95,7 @@ namespace BookStoreWebApp.Models
                     .HasColumnName("name");
             });
 
-            modelBuilder.Entity<Order>(entity =>
+            modelBuilder.Entity<OrderSum>(entity =>
             {
                 entity.ToTable("orders");
 
@@ -75,13 +115,10 @@ namespace BookStoreWebApp.Models
                     .HasColumnType("datetime")
                     .HasColumnName("order_at");
 
-                entity.Property(e => e.Price)
-                    .HasColumnType("money")
-                    .HasColumnName("price");
-
-                entity.Property(e => e.ProductId).HasColumnName("product_id");
-
-                entity.Property(e => e.Quantity).HasColumnName("quantity");
+                entity.Property(e => e.Phone)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasColumnName("phone");
 
                 entity.Property(e => e.Status)
                     .HasMaxLength(45)
@@ -97,15 +134,9 @@ namespace BookStoreWebApp.Models
                     .HasColumnName("update_at");
 
                 entity.Property(e => e.UserId)
-                    .HasMaxLength(50)
+                    .HasMaxLength(45)
                     .IsUnicode(false)
                     .HasColumnName("user_id");
-
-                entity.HasOne(d => d.Product)
-                    .WithMany(p => p.Orders)
-                    .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK__orders__product___3C69FB99");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Orders)
@@ -114,17 +145,55 @@ namespace BookStoreWebApp.Models
                     .HasConstraintName("FK__orders__user_id__3B75D760");
             });
 
+            modelBuilder.Entity<OrderDetail>(entity =>
+            {
+                entity.ToTable("order_detail");
+
+                entity.Property(e => e.Id)
+                    .HasMaxLength(45)
+                    .IsUnicode(false)
+                    .HasColumnName("id");
+
+                entity.Property(e => e.OrderId).HasColumnName("order_id");
+
+                entity.Property(e => e.Price)
+                    .HasColumnType("money")
+                    .HasColumnName("price");
+
+                entity.Property(e => e.ProductId).HasColumnName("product_id");
+
+                entity.Property(e => e.Quantity).HasColumnName("quantity");
+
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.OrderDetails)
+                    .HasForeignKey(d => d.OrderId)
+                    .HasConstraintName("FK__order_det__order__5AEE82B9");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.OrderDetails)
+                    .HasForeignKey(d => d.ProductId)
+                    .HasConstraintName("FK__order_det__produ__5BE2A6F2");
+            });
+
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.ToTable("products");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.Author)
+                    .HasMaxLength(255)
+                    .HasColumnName("author");
+
                 entity.Property(e => e.CategoryId).HasColumnName("category_id");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasColumnName("created_at");
+
+                entity.Property(e => e.Description)
+                    .HasColumnType("text")
+                    .HasColumnName("description");
 
                 entity.Property(e => e.IsDeleted)
                     .HasColumnName("is_deleted")
@@ -198,7 +267,7 @@ namespace BookStoreWebApp.Models
                 entity.Property(e => e.Star).HasColumnName("star");
 
                 entity.Property(e => e.UserId)
-                    .HasMaxLength(50)
+                    .HasMaxLength(45)
                     .IsUnicode(false)
                     .HasColumnName("user_id");
 
@@ -243,7 +312,7 @@ namespace BookStoreWebApp.Models
                 entity.ToTable("roles");
 
                 entity.Property(e => e.Id)
-                    .HasMaxLength(50)
+                    .HasMaxLength(45)
                     .IsUnicode(false)
                     .HasColumnName("id");
 
@@ -257,14 +326,14 @@ namespace BookStoreWebApp.Models
             {
                 entity.ToTable("users");
 
-                entity.HasIndex(e => e.Mail, "UQ__users__7A2129041AF738DC")
+                entity.HasIndex(e => e.Mail, "UQ__users__7A212904ABC7A8B2")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Phone, "UQ__users__B43B145F832E8DFB")
+                entity.HasIndex(e => e.Phone, "UQ__users__B43B145F4BB2FEFD")
                     .IsUnique();
 
                 entity.Property(e => e.Id)
-                    .HasMaxLength(50)
+                    .HasMaxLength(45)
                     .IsUnicode(false)
                     .HasColumnName("id");
 
@@ -314,24 +383,24 @@ namespace BookStoreWebApp.Models
                 entity.ToTable("user_roles");
 
                 entity.Property(e => e.Id)
-                    .HasMaxLength(50)
+                    .HasMaxLength(45)
                     .IsUnicode(false)
                     .HasColumnName("id");
 
                 entity.Property(e => e.RoleId)
-                    .HasMaxLength(50)
+                    .HasMaxLength(45)
                     .IsUnicode(false)
                     .HasColumnName("role_id");
 
+                entity.Property(e => e.RoleName)
+                    .HasMaxLength(45)
+                    .IsUnicode(false)
+                    .HasColumnName("role_name");
+
                 entity.Property(e => e.UserId)
-                    .HasMaxLength(50)
+                    .HasMaxLength(45)
                     .IsUnicode(false)
                     .HasColumnName("user_id");
-
-                entity.Property(e => e.RoleName)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("role_name");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.UserRoles)

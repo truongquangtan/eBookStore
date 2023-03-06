@@ -1,0 +1,32 @@
+﻿.success {
+    background-color: #32ea72;
+    color: #f0f0f0;
+}
+
+.failure {
+    background-color: #ff3939;
+    color: #f0f0f0;
+}
+
+.notify {
+    position: fixed;
+    top: 85px;
+    right: 0px;
+    width: 30%;
+    height: 0;
+    box-sizing: border-box;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition: height .2s;
+}
+
+#notifyType:before {
+    display: block;
+    margin-top: 15px;
+}
+
+.active {
+    height: 50px;
+}

@@ -1,0 +1,40 @@
+﻿@using BookStoreWebApp.Models.DTO
+@using Newtonsoft.Json
+
+@model List<BookStoreWebApp.Models.Category>;
+
+@{
+    ViewData["Title"] = $"Admin Page";
+    string user = (string)TempData["User"];
+    var rawMessage = (string)TempData["Message"];
+    MessageDTO message = String.IsNullOrEmpty(rawMessage) ? null : JsonConvert.DeserializeObject<MessageDTO>((string)TempData["Message"]);
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<main class="flex-1 pb-8">
+    <h1 class="text-5xl pt-8 pb-16 px-8 font-bold">Categories</h1>
+    <div class="pl-8 pb-4 pt-4 w-full">
+        <form asp-action="AddCategory" method="post" class="w-full">
+            <div class="flex gap-3 w-4/5 mx-auto">
+                <input type="text" placeholder="Add category..." class="py-2.5 px-4 w-[800px] bg-gray-200 rounded-xl" name="Name" />
+                <button type="submit" name="action" value="submit" class="px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl">Add</button>
+            </div>
+        </form>
+    </div>
+    <div class="pl-8 w-full">
+        <table class="table-auto w-4/5 mx-auto" border="1">
+            <tbody>
+                @foreach (var category in Model)
+                {
+                    <tr>
+                        <td class="w-[40%] border-2 text-center">@category.Name</td>
+                        <td class="w-[40%] border-2 text-center">@category.CreatedAt</td>
+                        <td class="p-2 border-2 flex gap-4">
+                            <button class="px-4 py-2.5 rounded-xl bg-red-700 hover:bg-red-800 text-white">Delete</button>
+                            <button class="px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white">Update</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</main>

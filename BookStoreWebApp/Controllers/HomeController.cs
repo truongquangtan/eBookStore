@@ -9,22 +9,35 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 
 namespace BookStoreWebApp.Controllers
 {
-    [Authorize(Roles = RoleName.USER)]
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly eBookStore5Context context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, eBookStore5Context context)
         {
             _logger = logger;
+            this.context = context;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var books = context.Products.Where(p => p.IsDeleted == false).Include(p => p.Category).Include(p => p.ProductImages).ToList();
+            return View(books);
+        }
+
+        [Route("Product/{id}")]
+        public IActionResult BookDetail(int id)
+        {
+            var book = context.Products.Where(p => p.Id == id && p.IsDeleted == false).Include(p => p.ProductImages).Include(p => p.Category).FirstOrDefault();
+            return View(book);
         }
 
         public IActionResult Privacy()

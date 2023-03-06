@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using BookStoreWebApp.Models;
 using Microsoft.EntityFrameworkCore;
 using BookStoreWebApp.Supporters.CustomIdentityProvider;
-using ChatApp.Supporters.CustomIdentityProvider;
 using Microsoft.AspNetCore.Identity;
 using BookStoreWebApp.Supporters.DataGenerator;
 
@@ -30,7 +29,7 @@ namespace BookStoreWebApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<eBookStore3Context>(options =>
+            services.AddDbContext<eBookStore5Context>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("localDB"));
             });
@@ -43,7 +42,6 @@ namespace BookStoreWebApp
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 6;
-
             }).AddDefaultTokenProviders();
             services.AddTransient<IUserStore<User>, UserStore>();
             services.AddTransient<IRoleStore<Role>, RoleStore>();

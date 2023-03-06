@@ -1,0 +1,102 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = $"Book Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string user = (string) TempData["User"];
+}
+
+<main class="bg-white py-10">
+    <div class="max-w-7xl mx-auto space-y-5 mt-[5rem]">
+        <nav>
+            <ul class="list-none flex">
+                <li>
+                    <div class="flex items-center">
+                        <a asp-action="Index" asp-controller="Home" class="mr-2 text-sm font-medium text-gray-900">Home</a>
+                        <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" aria-hidden="true"
+                             class="h-5 w-4 text-gray-300">
+                            <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
+                        </svg>
+                    </div>
+                </li>
+
+                <li class="text-sm">
+                    <div aria-current="page" class="font-medium text-gray-500 hover:text-gray-600">
+                        Book
+                        details
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="grid grid-cols-3 gap-5">
+            <div class="space-y-5 col-span-2  border-r">
+                <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">@Model.Name</h1>
+
+                <div class="h-fit !mt-[2rem]">
+                    <h3 class="sr-only">@Model.Description</h3>
+
+                    <div class="space-y-6">
+                        <p class="text-base text-gray-900">
+                            @Model.Description abc
+                        </p>
+                    </div>
+                </div>
+
+                <div class="!mt-[5rem]">
+                    <h3 class="text-sm font-medium text-gray-900">Attributes</h3>
+
+                    <div class="mt-4">
+                        <ul role="list" class="list-disc space-y-2 pl-4 text-sm">
+                            <li class="text-gray-400">
+                                <span class="text-gray-600">
+                                    Author: @Model.Author
+                                </span>
+                            </li>
+
+                            <li class="text-gray-400">
+                                <span class="text-gray-600">
+                                    Page: @Model.Page
+                                </span>
+                            </li>
+
+                            <li class="text-gray-400">
+                                <span class="text-gray-600">
+                                    Category: @Model.Category.Name
+                                </span>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-sm font-medium text-gray-900">Description</h2>
+
+                    <div class="mt-4 space-y-6">
+                        <p class="text-sm text-gray-600">
+                            @Model.Description
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options -->
+            <div class="col-span-1">
+                <h2 class="sr-only">Product information</h2>
+                <div class="w-full aspect-square">
+                    <img src="@("/images/"+ Model.ProductImages.FirstOrDefault().Link)" alt="productImage" class="h-full w-full rounded-lg object-cover object-center" />
+                </div>
+                <p class="text-3xl tracking-tight text-gray-900 mt-[3rem]">@Model.Price</p>
+
+                <div class="mt-10">
+                    <button type="submit" onclick="addToCart(@Model.Id, '@User.Identity.Name')"
+                            class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Add
+                        to cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

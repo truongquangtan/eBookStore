@@ -1,0 +1,117 @@
+﻿@using BookStoreWebApp.Supporters.Constants
+@model OrderSum
+@{
+    ViewData["Title"] = $"Order detail";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string user = (string)TempData["User"];
+    long total = 0;
+    int count = 0;
+    foreach (var item in Model.OrderDetails)
+    {
+        count++;
+        total += item.Quantity.Value * (long)item.Product.Price.Value;
+    }
+}
+
+<div class="container mx-auto" onload="hideUnusabledElement()">
+    <div class="flex shadow-md">
+        <div class="w-3/4 bg-white px-10 py-10 mt-[5rem]">
+            <div class="flex justify-between border-b pb-8">
+                <div class="flex items-center gap-3">
+                    <p class="font-semibold text-2xl block">Order Detail</p>
+                </div>
+                <div class="font-semibold text-2xl">@count Items</div>
+            </div>
+            <table>
+                <thead>
+                    <tr class="border-b-[1px]">
+                        <th class="font-semibold text-gray-600 text-xs uppercase w-1/3 text-left">Product Details</th>
+                        <th class="font-semibold text-gray-600 text-xs uppercase w-1/5 text-left">Quantity</th>
+                        <th class="font-semibold text-gray-600 text-xs uppercase w-1/5 text-left">Price</th>
+                        <th class="font-semibold text-gray-600 text-xs uppercase w-1/5 text-left">Total</th>
+                        <th class="font-semibold text-gray-600 text-xs uppercase w-1/5 text-left">See product</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderDetails)
+                    {
+                        <tr>
+                            <td class="flex items-center -mx-8 px-6 py-5">
+                                <div class="flex items-center w-2/5">
+                                    <!-- product -->
+                                    <div class="w-20">
+                                        <img src="@("/images/"+ item.Product.ProductImages.FirstOrDefault().Link)" alt="productImage" />
+                                    </div>
+                                    <div class="flex flex-col justify-between ml-4 flex-start items-start">
+                                        <span class="font-bold text-sm">@item.Product.Name</span>
+                                        <span class="text-red-500 text-xs">@item.Product.Author</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="font-semibold text-sm">@item.Quantity</td>
+                            <td class="font-semibold text-sm">@item.Product.Price</td>
+                            <td class="font-semibold text-sm" id="@item.Id-total">@(item.Product.Price * item.Quantity)</td>
+                            <td class="w-1/4">
+                                <a asp-action="BookDetail" asp-controller="Home" asp-route-id="@item.Product.Id" class="w-full flex items-center justify-center bg-white mt-6 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto sm:mt-0">
+                                    Product
+                                    <span class="sr-only">for order @Model.Id</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="border-t-[3px] mt-3 pt-3">
+                <p class="font-bold text-red-500 text-3xl w-full text-right pl-[5rem]">Total: @total</p>
+             </div>
+
+        <a asp-action="Index" asp-controller="OrderAdmin" class="flex font-semibold text-indigo-600 text-sm mt-10">
+            <svg class="fill-current mr-2 text-indigo-600 w-4" viewBox="0 0 448 512"><path d="M134.059 296H436c6.627 0 12-5.373 12-12v-56c0-6.627-5.373-12-12-12H134.059v-46.059c0-21.382-25.851-32.09-40.971-16.971L7.029 239.029c-9.373 9.373-9.373 24.569 0 33.941l86.059 86.059c15.119 15.119 40.971 4.411 40.971-16.971V296z" /></svg>
+            Back
+        </a>
+    </div>
+        <div class="px-10 py-10 mt-[5rem] border-l-[2rem]">
+            <div class="py-2">
+                <div>Address</div>
+                <div class="py-2 px-1 w-full my-1 font-bold" >@Model.DeliveryAddress</div>
+            </div>
+            <div class="py-2">
+                <label>Phone</label>
+                <div class="py-2 px-1 w-full my-1 font-bold">@Model.Phone</div>
+            </div>
+            <div class="py-2">
+                <form asp-action="UpdateStatus" method="post">
+                    <label for="NewStatus">Status</label>
+                    <select id="NewStatus" name="NewStatus" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        @if(Model.Status == OrderStatus.CREATED)
+                        {
+                            <option value="@OrderStatus.CREATED" selected>Created</option>
+                        }
+                        else
+                        {
+                            <option value="@OrderStatus.CREATED">Created</option>
+                        }
+                        @if(Model.Status == OrderStatus.ACCEPTED)
+                        {
+                            <option value="@OrderStatus.ACCEPTED" selected>Accepted</option>
+                        }
+                        else
+                        {
+                            <option value="@OrderStatus.ACCEPTED">Accepted</option>
+                        }
+                        @if (Model.Status == OrderStatus.SHIPPED)
+                        {
+                            <option value="@OrderStatus.SHIPPED" selected>Shipped</option>
+                        }
+                        else
+                        {
+                            <option value="@OrderStatus.SHIPPED">Shipped</option>
+                        }
+                    </select>
+                    <input type="hidden" name="OrderId" value="@Model.Id" />
+                    <button type="submit" class="bg-blue-500 px-2 py-1 rounded-xl text-white hover:bg-blue-600 my-3">Change status</button>
+                </form>
+            </div>
+    </div>
+</div>
+</div>

@@ -1,0 +1,108 @@
+﻿@model IEnumerable<Cart>
+
+@{
+    ViewData["Title"] = $"Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string user = (string)TempData["User"];
+    long total = 0;
+    int count = 0;
+    foreach(var item in Model)
+    {
+        count++;
+        total += item.Quantity.Value * (long) item.Product.Price.Value;
+    }
+}
+
+<div class="container mx-auto">
+    <div class="flex shadow-md">
+        <div class="w-3/4 bg-white px-10 py-10 mt-[5rem]">
+            <div class="flex justify-between border-b pb-8">
+                <div class="flex items-center gap-3">
+                    <p class="font-semibold text-2xl block">Shopping Cart</p>
+                </div>
+                <div class="font-semibold text-2xl">@count Items</div>
+            </div>
+            <div class="flex mt-10 mb-5">
+                <h3 class="font-semibold text-gray-600 text-xs uppercase w-1/2">Product Details</h3>
+                <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5 text-center">Quantity</h3>
+                <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5 text-center">Price</h3>
+                <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5 text-center">Total</h3>
+                <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5 text-center">Save change</h3>
+            </div>
+            <div class="h-[70vh] w-full overflow-x-hidden overflow-y-auto">
+                @foreach (var item in Model)
+                {
+                    <div class="flex items-center hover:bg-gray-100 -mx-8 px-6 py-5">
+                        <div class="flex w-2/5">
+                            <!-- product -->
+                            <div class="w-20">
+                                <img src="@("/images/"+ item.Product.ProductImages.FirstOrDefault().Link)" alt="productImage" />
+                            </div>
+                            <div class="flex flex-col justify-between ml-4 flex-grow">
+                                <span class="font-bold text-sm">@item.Product.Name</span>
+                                <span class="text-red-500 text-xs">@item.Product.Author</span>
+                                <a asp-action="DeleteItem" asp-controller="Cart" asp-route-id="@item.Id" class="font-semibold text-xs bg-red-300 text-white hover:bg-red-500 py-1 px-2 w-fit rounded-lg mt-1">Remove</a>
+                            </div>
+                        </div>
+                        <form asp-action="UpdateCart" method="POST" class="flex w-3/5">
+                        <div class="flex justify-center w-1/4">
+                            <button onclick="removeQuantity('@item.Id')">
+                                <svg class="fill-current text-gray-600 w-3" viewBox="0 0 448 512">
+                                    <path d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z" />
+                                </svg>
+                            </button>
+
+                            <input id="@item.Id-quantity" name="Quantity" class="mx-2 border text-center w-8" type="text" value="@item.Quantity">
+
+                            <button onclick="addQuantity('@item.Id')">
+                                <svg class="fill-current text-gray-600 w-3" viewBox="0 0 448 512">
+                                    <path d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="text-center w-1/4 font-semibold text-sm">@item.Product.Price</span>
+                        <span class="text-center w-1/4 font-semibold text-sm" id="@item.Id-total">@(item.Product.Price * item.Quantity)</span>
+                        <div class="w-1/4">
+                                <input type="hidden" name="Id" value="@item.Id">
+                                <button type="submit" class="text-center w-full font-semibold text-sm pl-[4rem]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7a48.678 48.678 0 0 0-7.324 0a4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7a48.656 48.656 0 0 0 7.324 0a4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
+                                    </svg>
+                                </button>
+                        </div>
+                        </form>
+                    </div>
+
+                }
+            </div>
+
+            <a asp-action="Index" asp-controller="Home" class="flex font-semibold text-indigo-600 text-sm mt-10">
+
+                <svg class="fill-current mr-2 text-indigo-600 w-4" viewBox="0 0 448 512"><path d="M134.059 296H436c6.627 0 12-5.373 12-12v-56c0-6.627-5.373-12-12-12H134.059v-46.059c0-21.382-25.851-32.09-40.971-16.971L7.029 239.029c-9.373 9.373-9.373 24.569 0 33.941l86.059 86.059c15.119 15.119 40.971 4.411 40.971-16.971V296z" /></svg>
+                Continue Shopping
+            </a>
+        </div>
+
+        <div id="summary" class="w-1/4 px-8 py-10 mt-[5rem]">
+            <h1 class="font-semibold text-2xl border-b pb-8">Order Summary</h1>
+            <form asp-action="Checkout" method="POST">
+                <div class="py-2">
+                    <label for="Address">Enter your address*</label><br />
+                    <input type="text" name="Address" placeholder="Your address" class="bg-slate-100 focus:bg-slate-200 py-2 px-1 w-full my-1" />
+                </div>
+                <div class="py-2">
+                    <label for="Phone">Enter your phone</label><br />
+                    <input type="text" name="Phone" placeholder="Your phone" class="bg-slate-100 focus:bg-slate-200 py-2 px-1 w-full my-1" />
+                </div>
+                <div class="border-t mt-8">
+                    <div class="flex font-semibold justify-between py-6 text-sm uppercase">
+                        <span>Total cost</span>
+                        <span>$@total</span>
+                    </div>
+                    <button type="submit" class="bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full">Checkout</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>

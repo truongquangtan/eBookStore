@@ -9,7 +9,8 @@ namespace BookStoreWebApp.Models
     {
         public User()
         {
-            Orders = new HashSet<Order>();
+            Carts = new HashSet<Cart>();
+            Orders = new HashSet<OrderSum>();
             Reviews = new HashSet<Review>();
             UserRoles = new HashSet<UserRole>();
         }
@@ -25,7 +26,8 @@ namespace BookStoreWebApp.Models
         public bool? IsDeleted { get; set; }
         public bool? IsActive { get; set; }
 
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Cart> Carts { get; set; }
+        public virtual ICollection<OrderSum> Orders { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; }
     }

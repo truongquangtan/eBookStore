@@ -51,7 +51,7 @@ namespace BookStoreWebApp.Controllers
                     var roles = await _userManager.GetRolesAsync(user);
                     if(roles.FirstOrDefault().Equals(RoleName.ADMIN))
                     {
-                        return RedirectToAction("Index", "Admin");
+                        return RedirectToAction("Index", "Product");
                     }    
                     return RedirectToAction("Index", "Home");
                 }

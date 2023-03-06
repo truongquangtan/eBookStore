@@ -1,0 +1,52 @@
+﻿@model IEnumerable<OrderSum>
+<main>
+    <div class="bg-white pt-[5rem]">
+        <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:pb-24 lg:px-8">
+            <div class="max-w-xl">
+                <h1 class="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">Order history</h1>
+                <p class="mt-2 text-sm text-gray-500">Check the status of recent orders, manage returns, and download invoices.</p>
+            </div>
+
+            <div class="mt-16">
+                <h2 class="sr-only">Recent orders</h2>
+                <div class="max-h-[70vh] overflow-auto">
+                    @foreach (var item in Model)
+                    {
+                        <div class="space-y-20 my-2">
+                            <div>
+                                <h3 class="sr-only">Order placed on <time datetime="2021-01-22">@item.OrderAt</time></h3>
+
+                                <div class="bg-gray-100 rounded-lg py-6 px-4 sm:px-6 sm:flex sm:items-center sm:justify-between sm:space-x-6 lg:space-x-8">
+                                    <dl class="divide-y divide-gray-200 space-y-6 text-sm text-gray-600 flex-auto sm:divide-y-0 sm:space-y-0 sm:grid sm:grid-cols-4 sm:gap-x-6 lg:w-full lg:gap-x-8">
+                                        <div class="flex justify-between sm:block">
+                                            <dt class="font-medium text-gray-900">Created at</dt>
+                                            <dd class="sm:mt-1">
+                                                <time datetime="2021-01-22">@item.OrderAt</time>
+                                            </dd>
+                                        </div>
+                                        <div class="flex justify-between pt-6 sm:block sm:pt-0">
+                                            <dt class="font-medium text-gray-900">Order Address</dt>
+                                            <dd class="sm:mt-1">@item.DeliveryAddress</dd>
+                                        </div>
+                                        <div class="flex justify-between pt-6 font-medium text-gray-900 sm:block sm:pt-0">
+                                            <dt>Total amount</dt>
+                                            <dd class="sm:mt-1">@item.Total</dd>
+                                        </div>
+                                        <div class="flex justify-between pt-6 sm:block sm:pt-0">
+                                            <dt class="font-medium text-gray-900">Status</dt>
+                                            <dd class="sm:mt-1 font-bold text-xl">@item.Status</dd>
+                                        </div>
+                                    </dl>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="w-full flex items-center justify-center bg-white mt-6 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto sm:mt-0">
+                                        Details
+                                        <span class="sr-only">for order WU88191111</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

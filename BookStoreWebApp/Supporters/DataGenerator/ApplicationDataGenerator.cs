@@ -15,7 +15,7 @@ namespace BookStoreWebApp.Supporters.DataGenerator
         const string DEFAULT = "default1";
         public static async Task Initialize(IServiceProvider serviceProvider, string adminName, string adminPassword)
         {
-            using (var context = new eBookStore3Context(serviceProvider.GetRequiredService<DbContextOptions<eBookStore3Context>>()))
+            using (var context = new eBookStore5Context(serviceProvider.GetRequiredService<DbContextOptions<eBookStore5Context>>()))
             {
                 await CreateListOfRoleAsync(serviceProvider, new List<String> { RoleName.ADMIN, RoleName.USER });
 

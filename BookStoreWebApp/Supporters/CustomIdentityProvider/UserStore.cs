@@ -12,9 +12,9 @@ namespace BookStoreWebApp.Supporters.CustomIdentityProvider
 {
     public class UserStore : IUserStore<User>, IUserRoleStore<User>, IUserPasswordStore<User>
     {
-         eBookStore3Context _context;
+         eBookStore5Context _context;
 
-        public UserStore(eBookStore3Context context)
+        public UserStore(eBookStore5Context context)
         {
             _context = context;
         }

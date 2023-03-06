@@ -26,7 +26,7 @@ namespace BookStoreWebApp
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                var context = services.GetRequiredService<eBookStore3Context>();
+                var context = services.GetRequiredService<eBookStore5Context>();
                 context.Database.EnsureCreated();
 
                 var adminPassword = config.GetValue<string>("AdminAccount:password");

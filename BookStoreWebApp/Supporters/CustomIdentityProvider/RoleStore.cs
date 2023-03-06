@@ -6,13 +6,13 @@ using System.Threading;
 using System;
 using System.Linq;
 
-namespace ChatApp.Supporters.CustomIdentityProvider
+namespace BookStoreWebApp.Supporters.CustomIdentityProvider
 {
     public class RoleStore : IRoleStore<Role>
     {
-        private readonly eBookStore3Context _context;
+        private readonly eBookStore5Context _context;
 
-        public RoleStore(eBookStore3Context context)
+        public RoleStore(eBookStore5Context context)
         {
             _context = context;
         }

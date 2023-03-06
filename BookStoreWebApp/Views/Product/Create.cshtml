@@ -1,0 +1,94 @@
+﻿@using Newtonsoft.Json
+@model BookStoreWebApp.Models.Product
+@{
+    ViewData["Title"] = "Create Product";
+    Layout = null;
+    string dataFetch = (string) TempData["Categories"];
+    IEnumerable<Category> categories = String.IsNullOrEmpty(dataFetch) ? new List<Category>() : JsonConvert.DeserializeObject<IEnumerable<Category>>(dataFetch);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MvcMovie.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="container">
+        <h1>Create</h1>
+
+        <h4>Product</h4>
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ImageFile" class="control-label"></label>
+                        <input asp-for="ImageFile" accept="image/*" />
+                        <span asp-validation-for="ImageFile" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Author" class="control-label"></label>
+                        <input asp-for="Author" class="form-control" />
+                        <span asp-validation-for="Author" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <textarea asp-for="Description" class="form-control"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CategoryId" class="control-label"></label>
+                        <select asp-for="CategoryId">
+                            @foreach (var category in categories)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Quantity" class="control-label"></label>
+                        <input asp-for="Quantity" class="form-control" />
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Page" class="control-label"></label>
+                        <input asp-for="Page" class="form-control" />
+                        <span asp-validation-for="Page" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Price" class="control-label"></label>
+                        <input asp-for="Price" class="form-control" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <a asp-action="Index">Back to List</a>
+        </div>
+    </div>
+-
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</body>
+</html>
