@@ -4,6 +4,7 @@ using BookStoreWebApp.Supporters.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -58,6 +59,24 @@ namespace BookStoreWebApp.Controllers
                 return RedirectToAction("Index");
             }
             return View(category);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var category = context.Categories.Where(cate => cate.Id == id).FirstOrDefault();
+
+            try
+            {
+                context.Categories.Remove(category);
+                context.SaveChanges();
+            } catch (Exception ex)
+            {
+                TempData["Message"] = "Cannot delete this category";
+                TempData["IsSuccess"] = "false";
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

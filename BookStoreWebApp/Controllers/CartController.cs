@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace BookStoreWebApp.Controllers
 {
@@ -119,6 +120,22 @@ namespace BookStoreWebApp.Controllers
         [Route("Cart/Checkout")]
         public async Task<IActionResult> Checkout(CheckoutRequest request)
         {
+            // Validation
+            if(string.IsNullOrEmpty(request.Address))
+            {
+                TempData["AddressError"] = "Request cannot be empty";
+                return RedirectToAction("Index");
+            }
+            if (Regex.IsMatch(request.Phone, "[0-9]{10}"))
+            {
+                //
+            }
+            else
+            {
+                TempData["PhoneError"] = "Phone is not in format";
+                return RedirectToAction("Index");
+            }
+
             var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
             var cart = await context.Carts.Where(c => c.UserId == user.Id).Include(c => c.Product).ToArrayAsync();
 
@@ -127,12 +144,34 @@ namespace BookStoreWebApp.Controllers
                 return Forbid();
             }
 
+            // CHECKOUT PROCESS
+
+            // Calculate total price
+
             long total = 0;
             foreach(var item in cart)
             {
+                // Check Product quantity
+                var product = context.Products.Where(p => p.Id == item.ProductId).FirstOrDefault();
+                if(product.Quantity < item.Quantity)
+                {
+                    TempData["Message"] = $"The book name {item.Product.Name} with quantity {item.Quantity} is not available. Try to select with less amount or delete it from cart";
+                    TempData["IsSuccess"] = "false";
+                    return RedirectToAction("Index");
+                }
                 total += item.Quantity.Value * (long) item.Product.Price.Value;
             }
 
+            foreach(var item in cart)
+            {
+                // Decrease the product quantity
+                var product = context.Products.Where(p => p.Id == item.ProductId).FirstOrDefault();
+                product.Quantity -= item.Quantity;
+                context.Products.Update(product);
+                context.SaveChanges();
+            }
+
+            // Create order summary
             var order = new OrderSum()
             {
                 Method = "DEFAULT",
@@ -144,6 +183,7 @@ namespace BookStoreWebApp.Controllers
             context.Orders.Add(order);
             await context.SaveChangesAsync();
 
+            // Create order detail
             List<OrderDetail> orderDetails = new();
             foreach (var item in cart)
             {
@@ -159,9 +199,11 @@ namespace BookStoreWebApp.Controllers
             await context.OrderDetails.AddRangeAsync(orderDetails);
             await context.SaveChangesAsync();
 
+            // Remove the cart
             context.Carts.RemoveRange(cart);
             await context.SaveChangesAsync();
 
+            //Show message
             TempData["Message"] = "You've checkout successfully, choose order history to see.";
             TempData["IsSuccess"] = "true";
 

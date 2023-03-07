@@ -7,7 +7,6 @@
     ViewData["Title"] = $"Admin Page";
     string user = (string)TempData["User"];
     var rawMessage = (string)TempData["Message"];
-    MessageDTO message = String.IsNullOrEmpty(rawMessage) ? null : JsonConvert.DeserializeObject<MessageDTO>((string)TempData["Message"]);
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 <main class="flex-1 pb-8">
@@ -29,8 +28,7 @@
                         <td class="w-[40%] border-2 text-center">@category.Name</td>
                         <td class="w-[40%] border-2 text-center">@category.CreatedAt</td>
                         <td class="p-2 border-2 flex gap-4">
-                            <button class="px-4 py-2.5 rounded-xl bg-red-700 hover:bg-red-800 text-white">Delete</button>
-                            <button class="px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white">Update</button>
+                            <a asp-action="Delete" asp-route-id="@category.Id" class="px-4 py-2.5 rounded-xl bg-red-700 hover:bg-red-800 text-white">Delete</a>
                         </td>
                     </tr>
                 }

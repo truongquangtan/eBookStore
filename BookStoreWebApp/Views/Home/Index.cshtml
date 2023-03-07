@@ -43,9 +43,9 @@
                             <span class="text-gray-400 mr-3 uppercase text-xs">@book.Author</span>
                             <p class="text-lg font-bold text-black truncate block capitalize">@book.Name</p>
                             <div class="flex items-center">
-                                <p class="text-lg font-semibold text-black cursor-auto my-3">@book.Price</p>
+                                <p class="text-lg font-semibold text-black cursor-auto my-3">@book.Price.Value.ToString("#") VNĐ</p>
                                 <del>
-                                    <p class="text-sm text-gray-600 cursor-auto ml-2">@book.Price</p>
+                                    <p class="text-sm text-gray-600 cursor-auto ml-2">@book.Price.Value.ToString("#") VNĐ</p>
                                 </del>
                                 <button class="ml-auto z-10" onmouseup="addToCart(@book.Id, '@User.Identity.Name')">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"

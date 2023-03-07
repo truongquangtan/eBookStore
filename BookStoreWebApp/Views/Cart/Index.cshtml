@@ -11,6 +11,8 @@
         count++;
         total += item.Quantity.Value * (long) item.Product.Price.Value;
     }
+    string addressError = TempData["AddressError"] != null ? (string)TempData["AddressError"] : null;
+    string phoneError = TempData["PhoneError"] != null ? (string)TempData["PhoneError"] : null;
 }
 
 <div class="container mx-auto">
@@ -60,8 +62,8 @@
                                 </svg>
                             </button>
                         </div>
-                        <span class="text-center w-1/4 font-semibold text-sm">@item.Product.Price</span>
-                        <span class="text-center w-1/4 font-semibold text-sm" id="@item.Id-total">@(item.Product.Price * item.Quantity)</span>
+                        <span class="text-center w-1/4 font-semibold text-sm">@item.Product.Price.Value.ToString("#") VNĐ</span>
+                        <span class="text-center w-1/4 font-semibold text-sm" id="@item.Id-total">@(item.Product.Price * item.Quantity) VNĐ</span>
                         <div class="w-1/4">
                                 <input type="hidden" name="Id" value="@item.Id">
                                 <button type="submit" class="text-center w-full font-semibold text-sm pl-[4rem]">
@@ -74,13 +76,12 @@
                     </div>
 
                 }
+                <a href="/#bookShop" asp class="flex font-semibold text-indigo-600 text-sm mt-10">
+
+                    <svg class="fill-current mr-2 text-indigo-600 w-4" viewBox="0 0 448 512"><path d="M134.059 296H436c6.627 0 12-5.373 12-12v-56c0-6.627-5.373-12-12-12H134.059v-46.059c0-21.382-25.851-32.09-40.971-16.971L7.029 239.029c-9.373 9.373-9.373 24.569 0 33.941l86.059 86.059c15.119 15.119 40.971 4.411 40.971-16.971V296z" /></svg>
+                    Continue Shopping
+                </a>
             </div>
-
-            <a asp-action="Index" asp-controller="Home" class="flex font-semibold text-indigo-600 text-sm mt-10">
-
-                <svg class="fill-current mr-2 text-indigo-600 w-4" viewBox="0 0 448 512"><path d="M134.059 296H436c6.627 0 12-5.373 12-12v-56c0-6.627-5.373-12-12-12H134.059v-46.059c0-21.382-25.851-32.09-40.971-16.971L7.029 239.029c-9.373 9.373-9.373 24.569 0 33.941l86.059 86.059c15.119 15.119 40.971 4.411 40.971-16.971V296z" /></svg>
-                Continue Shopping
-            </a>
         </div>
 
         <div id="summary" class="w-1/4 px-8 py-10 mt-[5rem]">
@@ -93,12 +94,20 @@
                 <div class="py-2">
                     <label for="Phone">Enter your phone</label><br />
                     <input type="text" name="Phone" placeholder="Your phone" class="bg-slate-100 focus:bg-slate-200 py-2 px-1 w-full my-1" />
+                    @if(addressError != null && addressError != "")
+                    {
+                        <div class="text-sm-center text-red-500">@addressError</div>
+                    }
                 </div>
                 <div class="border-t mt-8">
                     <div class="flex font-semibold justify-between py-6 text-sm uppercase">
                         <span>Total cost</span>
-                        <span>$@total</span>
+                        <span>@total VNĐ</span>
                     </div>
+                    @if (phoneError != null && phoneError != "")
+                    {
+                            <div class="text-sm-center text-red-500">@phoneError</div>
+                    }
                     <button type="submit" class="bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full">Checkout</button>
                 </div>
             </form>

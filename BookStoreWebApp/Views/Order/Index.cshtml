@@ -1,4 +1,7 @@
-﻿@model IEnumerable<OrderSum>
+﻿@using BookStoreWebApp.Supporters.Constants;
+
+@model IEnumerable<OrderSum>
+
 <main>
     <div class="bg-white pt-[5rem]">
         <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:pb-24 lg:px-8">
@@ -30,11 +33,23 @@
                                         </div>
                                         <div class="flex justify-between pt-6 font-medium text-gray-900 sm:block sm:pt-0">
                                             <dt>Total amount</dt>
-                                            <dd class="sm:mt-1">@item.Total</dd>
+                                            <dd class="sm:mt-1">@item.Total VNĐ</dd>
                                         </div>
                                         <div class="flex justify-between pt-6 sm:block sm:pt-0">
                                             <dt class="font-medium text-gray-900">Status</dt>
-                                            <dd class="sm:mt-1 font-bold text-xl">@item.Status</dd>
+                                            @if(item.Status == OrderStatus.ACCEPTED)
+                                            {
+                                                <dd class="sm:mt-1 font-bold text-xl text-blue-500">@item.Status</dd>
+                                            }
+                                            else if(item.Status == OrderStatus.SHIPPED)
+                                            {
+                                                <dd class="sm:mt-1 font-bold text-xl text-green-500">@item.Status</dd>
+                                            }
+                                            else
+                                            {
+                                                <dd class="sm:mt-1 font-bold text-xl">@item.Status</dd>
+                                            }
+                                            
                                         </div>
                                     </dl>
                                     <a asp-action="Details" asp-route-id="@item.Id" class="w-full flex items-center justify-center bg-white mt-6 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto sm:mt-0">

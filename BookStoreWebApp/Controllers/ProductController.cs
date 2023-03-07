@@ -110,6 +110,9 @@ namespace BookStoreWebApp.Controllers
                 SetMessage(MessageType.Success, "Create product successfully");
                 return RedirectToAction("Index");
             }
+            List<Category> categories = context.Categories.Where(cate => cate.IsDeleted == false).ToList();
+
+            TempData["Categories"] = JsonConvert.SerializeObject(categories);
             return View(product);
         }
 

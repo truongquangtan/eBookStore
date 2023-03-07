@@ -1,0 +1,25 @@
+Launch the project: Open in Visual Studio -> Start project
+
+-- App Description --
+
+Roles: Admin, User
+Admin account: admin1 - 181a884529
+
+Admin:
+	CRUD Book
+	Create, Delete Category
+	Accept and approve the order (change order status)
+
+User:
+	Register, login, logout
+	See book, add to cart
+	Modify cart
+	See order history
+
+-- Advantage, disadvantage --
+Ads: Simple, Light-weight platform for trading books.
+	Order tracking.
+	Authentication and Authorization.
+
+Dis Adv: Filter, Search, Sort not yet implemented.
+	UI is not responsive and have some issue.

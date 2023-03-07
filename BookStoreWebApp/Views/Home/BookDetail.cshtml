@@ -87,7 +87,7 @@
                 <div class="w-full aspect-square">
                     <img src="@("/images/"+ Model.ProductImages.FirstOrDefault().Link)" alt="productImage" class="h-full w-full rounded-lg object-cover object-center" />
                 </div>
-                <p class="text-3xl tracking-tight text-gray-900 mt-[3rem]">@Model.Price</p>
+                <p class="text-3xl tracking-tight text-gray-900 mt-[3rem]">@Model.Price.Value.ToString("#") VNĐ</p>
 
                 <div class="mt-10">
                     <button type="submit" onclick="addToCart(@Model.Id, '@User.Identity.Name')"

@@ -20,7 +20,7 @@
 <!-- body -->
 <body class="main-layout home_page" onload="onLoadedHook(`@message`, '@isSuccess','@User.Identity.Name')">
     <div class="notify z-[1000] flex items-center"><span id="notifyType" class="block ml-3"></span></div>
-    <div class="w-full min-h-screen fixed font-sans text-gray-900 bg-gray-50 flex">
+    <div class="w-full min-h-screen font-sans text-gray-900 bg-gray-50 flex">
         <aside class="py-6 px-10 w-64 border-r border-gray-200">
             <div class="h-fit w-fit block flex items-center">
                 <img src="~/images/book_logo.jpg" width="80" height="80" />
@@ -40,7 +40,7 @@
                                   d="M6.847 9h10.306a1 1 0 0 1 .986.836l1.473 8.835A2 2 0 0 1 17.639 21H6.361a2 2 0 0 1-1.973-2.329l1.473-8.835A1 1 0 0 1 6.847 9Z"
                                   fill="currentColor"></path>
                         </svg>
-                        <span class="font-bold">Products</span>
+                        <span>Products</span>
                     </a>
                     <a asp-action="Index" asp-controller="Category" class="flex gap-x-4 items-center py-2 text-gray-500 hover:text-indigo-600 group">
                         <span class="absolute w-1.5 h-8 bg-indigo-600 rounded-r-full left-0 scale-y-0 -translate-x-full group-hover:scale-y-100 group-hover:translate-x-0 transition-transform ease-in-out">
@@ -70,25 +70,17 @@
                 </li>
             </ul>
         </aside>
-        <main class="flex-1 pb-8">
+        <main class="flex-1 pb-8 max-h-[90vh] overflow-auto">
             @RenderBody()
         </main>
     </div>
-    <footer class="border-top footer text-muted">
-        <div class="container text-center pb-3">
-            &copy; 2023 - BookStoreWebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <!-- Javascript files-->
     <script src="~/js/jquery.min.js"></script>
-    <script src="~/js/popper.min.js"></script>
-    <script src="~/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/jquery-3.0.0.min.js"></script>
     <script src="~/js/plugin.js"></script>
     <!-- sidebar -->
     <script src="~/js/jquery.mCustomScrollbar.concat.min.js"></script>
-    <script src="~/js/custom.js"></script>
     <script src="~/js/toast.js"></script>
     <script src="~/js/cart-process.js"></script>
     <script src="~/js/admin_index/index.js"></script>
