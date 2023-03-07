@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repositories.UserRepository
+namespace Repositories.Repositories.UserRepository
 {
     public class UserRepository : IUserRepository
     {
