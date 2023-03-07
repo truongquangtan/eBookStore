@@ -19,4 +19,13 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\CartRepository\" />
+    <Folder Include="Repositories\CategoryRepository\" />
+    <Folder Include="Repositories\ProductImgRepository\" />
+    <Folder Include="Repositories\OrderDetailRepository\" />
+    <Folder Include="Repositories\OrderRepository\" />
+    <Folder Include="Repositories\ProductRepository\" />
+  </ItemGroup>
+
 </Project>
