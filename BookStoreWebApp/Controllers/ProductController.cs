@@ -43,7 +43,7 @@ namespace BookStoreWebApp.Controllers
         public IActionResult Index()
         {
             List<Product> products = context.Products
-                .Where(p => p.IsDeleted == false && p.OnStock == true)
+                .Where(p => p.IsDeleted == false)
                 .Include(p => p.Category)
                 .Include(p => p.ProductImages)
                 .ToList();
