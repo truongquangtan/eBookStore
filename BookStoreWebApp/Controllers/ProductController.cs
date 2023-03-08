@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 using BookStoreWebApp.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using BookStoreWebApp.Supporters.Constants;
+using Repositories.Repositories.ProductRepository;
+using Repositories.Repositories.CategoryRepository;
+using Repositories.Repositories.ProductImgRepository;
 
 namespace BookStoreWebApp.Controllers
 {
@@ -22,12 +25,18 @@ namespace BookStoreWebApp.Controllers
     public class ProductController : Controller
     {
         private readonly eBookStore5Context context;
+        private readonly IProductRepository productRepository;
+        private readonly ICategoryRepository categoryRepository;
+        private readonly IProductImgRepository productImgRepository;
         private readonly IWebHostEnvironment webHostEnvironment;
 
-        public ProductController(eBookStore5Context context, IWebHostEnvironment webHostEnvironment)
+        public ProductController(eBookStore5Context context, IWebHostEnvironment webHostEnvironment, IProductRepository productRepository, ICategoryRepository categoryRepository, IProductImgRepository productImgRepository)
         {
             this.context = context;
             this.webHostEnvironment = webHostEnvironment;
+            this.productRepository = productRepository;
+            this.categoryRepository = categoryRepository;
+            this.productImgRepository = productImgRepository;
         }
         private void SetMessage(MessageType type, string text)
         {
@@ -36,17 +45,14 @@ namespace BookStoreWebApp.Controllers
                 MessageType = type,
                 Message = text,
             };
-            TempData["Message"] = JsonConvert.SerializeObject(message);
+            TempData["Message"] = message.Message;
+            TempData["IsSuccess"] = type == MessageType.Success ? "true" : "false";
         }
 
         //--------------------------------------- PRODUCT ----------------------------------------
         public IActionResult Index()
         {
-            List<Product> products = context.Products
-                .Where(p => p.IsDeleted == false)
-                .Include(p => p.Category)
-                .Include(p => p.ProductImages)
-                .ToList();
+            var products = productRepository.GetAll();
             return View(products);
         }
 
@@ -54,7 +60,7 @@ namespace BookStoreWebApp.Controllers
         [Route("product/create")]
         public IActionResult Create()
         {
-            List<Category> categories = context.Categories.Where(cate => cate.IsDeleted == false).ToList();
+            var categories = categoryRepository.GetAll();
 
             TempData["Categories"] = JsonConvert.SerializeObject(categories);
 
@@ -92,8 +98,7 @@ namespace BookStoreWebApp.Controllers
                 };
 
                 //Save product to db
-                context.Add(productEntity);
-                context.SaveChanges();
+                productRepository.Add(productEntity);
 
                 //Create image entity
                 ProductImage productImage = new()
@@ -103,14 +108,13 @@ namespace BookStoreWebApp.Controllers
                 };
 
                 //Save image to db
-                context.ProductImages.Add(productImage);
-                context.SaveChanges();
+                productImgRepository.Add(productImage);
 
                 //Pass message to index page
                 SetMessage(MessageType.Success, "Create product successfully");
                 return RedirectToAction("Index");
             }
-            List<Category> categories = context.Categories.Where(cate => cate.IsDeleted == false).ToList();
+            var categories = categoryRepository.GetAll();
 
             TempData["Categories"] = JsonConvert.SerializeObject(categories);
             return View(product);
@@ -125,10 +129,7 @@ namespace BookStoreWebApp.Controllers
                 return NotFound();
             }
 
-            var product = context.Products
-                .Include(p => p.Category)
-                .Include(p => p.ProductImages)
-                .FirstOrDefault(p => p.Id == id);
+            var product = productRepository.GetById(id.Value);
 
             if(product == null)
             { 
@@ -136,22 +137,22 @@ namespace BookStoreWebApp.Controllers
             }
 
             // Get all categories
-            List<Category> categories = context.Categories.Where(cate => cate.IsDeleted == false).ToList();
+            var categories = categoryRepository.GetAll();
 
             //Pass to view
             TempData["Categories"] = JsonConvert.SerializeObject(categories);
 
-            return View(product);
+            return View(ProductRequest.FromProduct(product));
         }
 
         // POST new product
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditProduct ([Bind("Id,Name,Author,CategoryId,Quantity,Page,Price,ImageFile,Description")] Product product)
+        public async Task<IActionResult> EditProduct ([Bind("Id,Name,Author,CategoryId,Quantity,Page,Price,ImageFile,Description")] ProductRequest product)
         {
             if (ModelState.IsValid)
             {
-                var inDbProduct = context.Products.Where(p => p.Id == product.Id).FirstOrDefault();
+                var inDbProduct = productRepository.GetById(product.Id);
 
                 inDbProduct.Name = product.Name;
                 inDbProduct.CategoryId = product.CategoryId;
@@ -161,43 +162,46 @@ namespace BookStoreWebApp.Controllers
                 inDbProduct.Author = product.Author;
                 inDbProduct.Description = product.Description;
 
-                // Save file img
-                string wwwRootPath = webHostEnvironment.WebRootPath;
-                string extension = Path.GetExtension(product.ImageFile.FileName);
-                string persistentName = Guid.NewGuid().ToString() + extension;
-                string path = Path.Combine(wwwRootPath + "/images/", persistentName);
-                using (var fileStream = new FileStream(path, FileMode.Create))
+                if(product.ImageFile != null)
                 {
-                    await product.ImageFile.CopyToAsync(fileStream);
+                    // Save file img
+                    string wwwRootPath = webHostEnvironment.WebRootPath;
+                    string extension = Path.GetExtension(product.ImageFile.FileName);
+                    string persistentName = Guid.NewGuid().ToString() + extension;
+                    string path = Path.Combine(wwwRootPath + "/images/", persistentName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await product.ImageFile.CopyToAsync(fileStream);
+                    }
+
+                    //Delete old image
+                    var productImg = productImgRepository.GetFirstByProductId(product.Id);
+                    productImgRepository.Delete(productImg);
+                    //Create image entity
+                    ProductImage productImage = new()
+                    {
+                        ProductId = inDbProduct.Id,
+                        Link = persistentName
+                    };
+
+                    //Save image to db
+                    productImgRepository.Add(productImage);
                 }
 
-                //Delete old image
-                var productImg = context.ProductImages.Where(p => p.ProductId == inDbProduct.Id).FirstOrDefault();
-                context.ProductImages.Remove(productImg);
-                context.SaveChanges();
-                //Create image entity
-                ProductImage productImage = new()
-                {
-                    ProductId = inDbProduct.Id,
-                    Link = persistentName
-                };
-
-                //Save image to db
-                context.ProductImages.Add(productImage);
-                context.SaveChanges();
-
-                context.Products.Update(inDbProduct);
-                context.SaveChanges();
+                productRepository.Update(inDbProduct);
 
                 SetMessage(MessageType.Success, $"Edit product with product id [${product.Id}] successfully");
                 return RedirectToAction("Index");
             }
             // Get all categories
-            List<Category> categories = context.Categories.Where(cate => cate.IsDeleted == false).ToList();
+            var categories = categoryRepository.GetAll();
 
             //Pass to view
             TempData["Categories"] = JsonConvert.SerializeObject(categories);
-            return View(product);
+
+            var includedImgProduct = productRepository.GetById(product.Id);
+
+            return View(includedImgProduct);
         }
 
         [Route("Product/DeleteProduct/{id}")]
@@ -206,9 +210,10 @@ namespace BookStoreWebApp.Controllers
         {
             try
             {
-                var product = await context.Products.FindAsync(id);
+                var product = productRepository.GetById(id);
                 product.IsDeleted = true;
-                await context.SaveChangesAsync();
+
+                productRepository.Update(product);
 
                 SetMessage(MessageType.Success, $"Delete product with product id [${id}] successfully");
             } catch (Exception ex)

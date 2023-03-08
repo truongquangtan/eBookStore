@@ -53,9 +53,10 @@ namespace Repositories.Repositories.CartRepository
             return total;
         }
 
-        public IEnumerable<Cart> GetCartProductByUserId(string userId)
+        public List<Cart> GetCartProductByUserId(string userId)
         {
-            throw new NotImplementedException();
+            var cartItem = context.Carts.Where(c => c.UserId == userId).Include(c => c.Product).ToList();
+            return cartItem;
         }
 
         public void Remove(Cart cart)
@@ -64,12 +65,13 @@ namespace Repositories.Repositories.CartRepository
             context.SaveChanges();
         }
 
-        public void RemoveRangeCart(Cart cart)
+        public void RemoveRangeCart(IEnumerable<Cart> carts)
         {
-            throw new NotImplementedException();
+            context.Carts.RemoveRange(carts);
+            context.SaveChanges();
         }
 
-        public void Upadte(Cart updatedCartInfo)
+        public void Update(Cart updatedCartInfo)
         {
             context.Carts.Update(updatedCartInfo);
             context.SaveChanges();

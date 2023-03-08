@@ -24,10 +24,21 @@ namespace Repositories.Repositories.OrderDetailRepository
             return entityEntry.Entity;
         }
 
+        public void AddRange(IEnumerable<OrderDetail> orders)
+        {
+            context.OrderDetails.AddRange(orders);
+            context.SaveChanges();
+        }
+
         public void Delete(OrderDetail orderDetail)
         {
             context.OrderDetails.Remove(orderDetail);
             context.SaveChanges();
+        }
+
+        public IEnumerable<OrderDetail> GetByOrderIdIncludeProduct(int id)
+        {
+            return context.OrderDetails.Where(o => o.OrderId == id).Include(o => o.Product).Include(o => o.Product.ProductImages).ToList();
         }
 
         public void Update(OrderDetail updateOrderDetailInfo)

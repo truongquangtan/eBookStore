@@ -1,5 +1,4 @@
-﻿using BookStoreWebApp.Supporters.Constants;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 #nullable disable
@@ -17,7 +16,7 @@ namespace BookStoreWebApp.Models
         public string UserId { get; set; }
         public string DeliveryAddress { get; set; }
         public string Method { get; set; }
-        public string Status { get; set; } = OrderStatus.CREATED;
+        public string Status { get; set; } = "CREATED";
         public DateTime? OrderAt { get; set; } = DateTime.Now;
         public DateTime? UpdateAt { get; set; } = DateTime.Now;
         public decimal? Total { get; set; }

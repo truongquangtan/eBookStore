@@ -7,18 +7,38 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Repositories.Repositories.CartRepository;
+using Repositories.Repositories.UserRepository;
+using Repositories.Repositories.ProductRepository;
+using Repositories.Repositories.OrderRepository;
+using Repositories.Repositories.OrderDetailRepository;
 
 namespace BookStoreWebApp.Controllers
 {
     public class CartController : Controller
     {
-        private readonly eBookStore5Context context;
         private readonly UserManager<User> _userManager;
+        private readonly ICartRepository cartRepository;
+        private readonly IUserRepository userRepository;
+        private readonly IProductRepository productRepository;
+        private readonly IOrderRepository orderRepository;
+        private readonly IOrderDetailRepository orderDetailRepository;
 
-        public CartController(eBookStore5Context context, UserManager<User> userManager)
+        public CartController(
+            UserManager<User> userManager,
+            ICartRepository cartRepository,
+            IUserRepository userRepository,
+            IProductRepository productRepository,
+            IOrderRepository orderRepository,
+            IOrderDetailRepository orderDetailRepository
+           )
         {
-            this.context = context;
             _userManager = userManager;
+            this.cartRepository = cartRepository;
+            this.userRepository = userRepository;
+            this.productRepository = productRepository;
+            this.orderRepository = orderRepository;
+            this.orderDetailRepository = orderDetailRepository;
         }
 
         public async Task<IActionResult> Index()
@@ -28,32 +48,30 @@ namespace BookStoreWebApp.Controllers
                 return RedirectToAction("Login", "Account");
             }
             var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
-            var cartItem = context.Carts.Where(c => c.UserId == user.Id).Include(c => c.Product).Include(c => c.Product.ProductImages).ToList();
+            var cartItem = cartRepository.GetCartByUserId(user.Id);
             return View(cartItem);
         }
         [HttpPost]
         [Route("add-to-cart")]
-        public async Task<bool> AddToCart(AddToCardRequest request)
+        public bool AddToCart(AddToCardRequest request)
         {
-            var user = context.Users.Where(user => user.Mail == request.Username).FirstOrDefault();
+            var user = userRepository.GetUserByUsername(HttpContext.User.Identity.Name);
             //Find old cart item
-            var cartItem = context.Carts.Where(c => c.ProductId == request.ProductId && c.UserId == user.Id).FirstOrDefault();
+            var cartItem = cartRepository.GetCartByProductIdAndUserId(request.ProductId, user.Id);
 
             if(cartItem != null)
             {
                 cartItem.Quantity++;
-                context.Carts.Update(cartItem);
-                await context.SaveChangesAsync();
+                cartRepository.Update(cartItem);
                 return true;
             }
 
-            context.Carts.Add(new Cart()
+            cartRepository.Add(new Cart()
             {
                 ProductId = request.ProductId,
                 UserId = user?.Id,
                 Quantity = 1,
             });
-            await context.SaveChangesAsync();
             return true;
         }
 
@@ -61,12 +79,11 @@ namespace BookStoreWebApp.Controllers
         [Route("Cart/DeleteItem/{id}")]
         public IActionResult DeleteItem(string id)
         {
-            var user = context.Users.Where(u => u.Mail == HttpContext.User.Identity.Name).FirstOrDefault();
-            var cartItem = context.Carts.Where(c => c.Id == id).FirstOrDefault();
+            var user = userRepository.GetUserByUsername(HttpContext.User.Identity.Name);
+            var cartItem = cartRepository.GetById(id);
             if(cartItem != null && cartItem.UserId == user.Id)
             {
-                context.Carts.Remove(cartItem);
-                context.SaveChanges();
+                cartRepository.Remove(cartItem);
                 TempData["Message"] = "Delete item from cart successfully";
                 TempData["IsSuccess"] = "true";
             }
@@ -86,8 +103,8 @@ namespace BookStoreWebApp.Controllers
             {
                 return "0";
             }
-            var user = context.Users.Where(user => user.Mail == request.Username).FirstOrDefault();
-            var total = context.Carts.Where(c => c.UserId == user.Id).Count();
+            var user = userRepository.GetUserByUsername(HttpContext.User.Identity.Name);
+            var total = cartRepository.GetCartCountByUserId(user.Id);
             return total.ToString();
         }
 
@@ -95,22 +112,20 @@ namespace BookStoreWebApp.Controllers
         [Route("Cart/UpdateCart")]
         public IActionResult UpdateCart(UpdateCartItem request)
         {
-            var cartItem = context.Carts.Where(c => c.Id == request.Id).FirstOrDefault();
+            var cartItem = cartRepository.GetById(request.Id);
             if(cartItem == null)
             {
                 return RedirectToAction("Index");
             }
             if(int.Parse(request.Quantity) == 0)
             {
-                context.Carts.Remove(cartItem);
-                context.SaveChanges();
+                cartRepository.Remove(cartItem);
                 TempData["Message"] = "Update cart successfully";
                 TempData["IsSuccess"] = "true";
                 return RedirectToAction("Index");
             }
             cartItem.Quantity = int.Parse(request.Quantity);
-            context.Carts.Update(cartItem);
-            context.SaveChanges();
+            cartRepository.Update(cartItem);
             TempData["Message"] = "Update cart successfully";
             TempData["IsSuccess"] = "true";
             return RedirectToAction("Index");
@@ -137,9 +152,9 @@ namespace BookStoreWebApp.Controllers
             }
 
             var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
-            var cart = await context.Carts.Where(c => c.UserId == user.Id).Include(c => c.Product).ToArrayAsync();
+            var cart = cartRepository.GetCartProductByUserId(user.Id);
 
-            if(cart.Length <= 0 || cart[0].UserId != user.Id)
+            if(cart.Count <= 0 || cart[0].UserId != user.Id)
             {
                 return Forbid();
             }
@@ -152,7 +167,7 @@ namespace BookStoreWebApp.Controllers
             foreach(var item in cart)
             {
                 // Check Product quantity
-                var product = context.Products.Where(p => p.Id == item.ProductId).FirstOrDefault();
+                var product = productRepository.GetById(item.ProductId);
                 if(product.Quantity < item.Quantity)
                 {
                     TempData["Message"] = $"The book name {item.Product.Name} with quantity {item.Quantity} is not available. Try to select with less amount or delete it from cart";
@@ -165,10 +180,9 @@ namespace BookStoreWebApp.Controllers
             foreach(var item in cart)
             {
                 // Decrease the product quantity
-                var product = context.Products.Where(p => p.Id == item.ProductId).FirstOrDefault();
+                var product = productRepository.GetById(item.ProductId);
                 product.Quantity -= item.Quantity;
-                context.Products.Update(product);
-                context.SaveChanges();
+                productRepository.Update(product);
             }
 
             // Create order summary
@@ -180,8 +194,7 @@ namespace BookStoreWebApp.Controllers
                 UserId = user.Id,
                 Phone = request.Phone,
             };
-            context.Orders.Add(order);
-            await context.SaveChangesAsync();
+            orderRepository.Add(order);
 
             // Create order detail
             List<OrderDetail> orderDetails = new();
@@ -196,12 +209,10 @@ namespace BookStoreWebApp.Controllers
                 };
                 orderDetails.Add(orderDetail);
             }
-            await context.OrderDetails.AddRangeAsync(orderDetails);
-            await context.SaveChangesAsync();
+            orderDetailRepository.AddRange(orderDetails);
 
             // Remove the cart
-            context.Carts.RemoveRange(cart);
-            await context.SaveChangesAsync();
+            cartRepository.RemoveRangeCart(cart);
 
             //Show message
             TempData["Message"] = "You've checkout successfully, choose order history to see.";

@@ -12,31 +12,30 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
+using Repositories.Repositories.ProductRepository;
 
 namespace BookStoreWebApp.Controllers
 {
     [AllowAnonymous]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly eBookStore5Context context;
+        private readonly IProductRepository productRepository;
 
-        public HomeController(ILogger<HomeController> logger, eBookStore5Context context)
+        public HomeController(IProductRepository productRepository)
         {
-            _logger = logger;
-            this.context = context;
+            this.productRepository = productRepository;
         }
 
         public IActionResult Index()
         {
-            var books = context.Products.Where(p => p.IsDeleted == false).Include(p => p.Category).Include(p => p.ProductImages).ToList();
+            var books = productRepository.GetAll();
             return View(books);
         }
 
         [Route("Product/{id}")]
         public IActionResult BookDetail(int id)
         {
-            var book = context.Products.Where(p => p.Id == id && p.IsDeleted == false).Include(p => p.ProductImages).Include(p => p.Category).FirstOrDefault();
+            var book = productRepository.GetById(id);
             return View(book);
         }
 

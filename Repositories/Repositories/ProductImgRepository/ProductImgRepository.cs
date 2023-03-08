@@ -41,5 +41,10 @@ namespace Repositories.Repositories.ProductImgRepository
             context.ProductImages.Update(updatedProductImgInfo);
             context.SaveChanges();
         }
+
+        public ProductImage GetFirstByProductId(int productId)
+        {
+            return context.ProductImages.Where(p => p.ProductId == productId).FirstOrDefault();
+        }
     }
 }

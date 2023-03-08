@@ -14,5 +14,8 @@ namespace Repositories.Repositories.OrderDetailRepository
         public void Delete(OrderDetail orderDetail);
 
         public void Update(OrderDetail updateOrderDetail);
+
+        public void AddRange(IEnumerable<OrderDetail> orderDetails);
+        public IEnumerable<OrderDetail> GetByOrderIdIncludeProduct(int id);
     }
 }

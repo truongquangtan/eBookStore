@@ -13,5 +13,8 @@ namespace Repositories.Repositories.OrderRepository
         public OrderSum Add(OrderSum order);
         public void Delete(OrderSum order);
         public void Update(OrderSum updateOrderInfo);
+        public IEnumerable<OrderSum> GetAllOrdersByCreatedTime();
+        public IEnumerable<OrderSum> GetOrdersByUserIdOrderByUpdateTimeDesc(string userId);
+        public OrderSum GetOrderByOrderIdAndUserId(int orderId, string userId);
     }
 }

@@ -13,5 +13,6 @@ namespace Repositories.Repositories.ProductImgRepository
         public ProductImage Add(ProductImage productImage);
         public void Delete(ProductImage productImage);
         public void Update(ProductImage updatedProductImgInfo);
+        public ProductImage GetFirstByProductId(int productId);
     }
 }

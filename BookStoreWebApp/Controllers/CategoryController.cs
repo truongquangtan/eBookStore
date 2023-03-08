@@ -4,6 +4,7 @@ using BookStoreWebApp.Supporters.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Repositories.Repositories.CategoryRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,26 +14,16 @@ namespace BookStoreWebApp.Controllers
     [Authorize(Roles = RoleName.ADMIN)]
     public class CategoryController : Controller
     {
-        private readonly eBookStore5Context context;
+        private readonly ICategoryRepository categoryRepository;
 
-        public CategoryController(eBookStore5Context context)
+        public CategoryController(ICategoryRepository categoryRepository)
         {
-            this.context = context;
-        }
-
-        private void SetMessage(MessageType type, string text)
-        {
-            var message = new MessageDTO()
-            {
-                MessageType = type,
-                Message = text,
-            };
-            TempData["Message"] = JsonConvert.SerializeObject(message);
+            this.categoryRepository = categoryRepository;
         }
 
         public IActionResult Index()
         {
-            List<Category> categories = context.Categories.Where(c => c.IsDeleted == false).ToList();
+            IEnumerable<Category> categories = categoryRepository.GetAll();
             return View(categories);
         }
 
@@ -54,8 +45,7 @@ namespace BookStoreWebApp.Controllers
                 {
                     Name = category.Name
                 };
-                context.Categories.Add(categoryEntity);
-                context.SaveChanges();
+                categoryRepository.Add(categoryEntity);
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -64,13 +54,11 @@ namespace BookStoreWebApp.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var category = context.Categories.Where(cate => cate.Id == id).FirstOrDefault();
-
+            var category = categoryRepository.GetById(id);
             try
             {
-                context.Categories.Remove(category);
-                context.SaveChanges();
-            } catch (Exception ex)
+                categoryRepository.Delete(category);
+            } catch (Exception)
             {
                 TempData["Message"] = "Cannot delete this category";
                 TempData["IsSuccess"] = "false";

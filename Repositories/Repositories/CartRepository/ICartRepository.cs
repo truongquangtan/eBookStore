@@ -13,10 +13,10 @@ namespace Repositories.Repositories.CartRepository
         public Cart GetCartByProductIdAndUserId(int productId,string userId);
         public int GetCartCountByUserId(string userId);
         public Cart? GetById(string id);
-        public IEnumerable<Cart> GetCartProductByUserId(string userId);
+        public List<Cart> GetCartProductByUserId(string userId);
         public Cart Add(Cart cart);
-        public void Upadte(Cart updatedCartInfo);
+        public void Update(Cart updatedCartInfo);
         public void Remove(Cart cart);
-        public void RemoveRangeCart(Cart cart);
+        public void RemoveRangeCart(IEnumerable<Cart> carts);
     }
 }

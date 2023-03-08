@@ -13,6 +13,14 @@ using Microsoft.EntityFrameworkCore;
 using BookStoreWebApp.Supporters.CustomIdentityProvider;
 using Microsoft.AspNetCore.Identity;
 using BookStoreWebApp.Supporters.DataGenerator;
+using Repositories.Repositories;
+using Repositories.Repositories.UserRepository;
+using Repositories.Repositories.ProductRepository;
+using Repositories.Repositories.CartRepository;
+using Repositories.Repositories.CategoryRepository;
+using Repositories.Repositories.OrderDetailRepository;
+using Repositories.Repositories.ProductImgRepository;
+using Repositories.Repositories.OrderRepository;
 
 namespace BookStoreWebApp
 {
@@ -45,6 +53,13 @@ namespace BookStoreWebApp
             }).AddDefaultTokenProviders();
             services.AddTransient<IUserStore<User>, UserStore>();
             services.AddTransient<IRoleStore<Role>, RoleStore>();
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<ICartRepository, CartRepository>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddTransient<IOrderDetailRepository, OrderDetailRepository>();
+            services.AddTransient<IProductImgRepository, ProductImgRepository>();
+            services.AddTransient<IOrderRepository, OrderRepository>();
 
             services.ConfigureApplicationCookie(options =>
             {
