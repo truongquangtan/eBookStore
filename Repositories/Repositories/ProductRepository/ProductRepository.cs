@@ -35,7 +35,9 @@ namespace Repositories.Repositories.ProductRepository
             List<Product> products = context.Products
                 .Where(p => p.IsDeleted == false)
                 .Include(p => p.Category)
-                .Include(p => p.ProductImages).ToList();
+                .Include(p => p.ProductImages)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToList();
             return products;
         }
 
@@ -52,6 +54,17 @@ namespace Repositories.Repositories.ProductRepository
         {
             context.Products.Update(updatedProductInfo);
             context.SaveChanges();
+        }
+
+        public IEnumerable<Product> GetAllByNameContain(string keyword)
+        {
+            List<Product> products = context.Products
+                .Where(p => p.IsDeleted == false && p.Name.Contains(keyword))
+                .Include(p => p.Category)
+                .Include(p => p.ProductImages)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToList();
+            return products;
         }
     }
 }

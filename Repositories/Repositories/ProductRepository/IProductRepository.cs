@@ -10,6 +10,7 @@ namespace Repositories.Repositories.ProductRepository
     public interface IProductRepository
     {
         public IEnumerable<Product> GetAll();
+        public IEnumerable<Product> GetAllByNameContain(string keyword);
         public Product? GetById(int id);
         public Product Add(Product product);
 

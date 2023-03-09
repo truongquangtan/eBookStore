@@ -17,5 +17,6 @@ namespace Repositories.Repositories.OrderRepository
         public IEnumerable<OrderSum> GetOrdersByUserIdOrderByUpdateTimeDesc(string userId);
         public OrderSum GetOrderByOrderIdAndUserId(int orderId, string userId);
         public IEnumerable<OrderSum> GetAllOrdersFilterByStatusByCreatedTime(string status);
+        public IEnumerable<OrderSum> GetOrdersByUserIdAndStatusOrderByUpdateTimeDesc(string userId, string status);
     }
 }

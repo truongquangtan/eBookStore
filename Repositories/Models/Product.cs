@@ -15,7 +15,6 @@ namespace BookStoreWebApp.Models
         public Product()
         {
             ProductImages = new HashSet<ProductImage>();
-            Reviews = new HashSet<Review>();
             OrderDetails = new HashSet<OrderDetail>();
         }
 
@@ -47,7 +46,6 @@ namespace BookStoreWebApp.Models
         [JsonIgnore]
         public virtual ICollection<Cart> Carts { get; set; }
         public virtual ICollection<ProductImage> ProductImages { get; set; }
-        public virtual ICollection<Review> Reviews { get; set; }
         [JsonIgnore]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }

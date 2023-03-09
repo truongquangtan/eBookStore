@@ -1,18 +1,19 @@
 ﻿const addToCart = (productId, username) => {
     if (!username) {
-        window.location.href = "https://localhost:44353/Account/Login"
+        console.log(window.location.host)
+        window.location.href = `https://${window.location.host}/Account/Login`
         return;
     }
     const form = new FormData()
     form.append("ProductId", productId)
     form.append("Username", username)
-    fetch("https://localhost:44353/add-to-cart", {
+    fetch(`https://${window.location.host}/add-to-cart`, {
         method: 'post',
         body: form,
     }).then(response => {
         return response.text();
     }).then(data => {
-        if (data == true) {
+        if (data.toString() === 'true') {
             notifySuccess("You've added 1 item to cart.")
             totalItemUpdate(username)
         } else {
@@ -43,7 +44,7 @@ const onLoadedHook = (message, isSuccess, username) => {
 const totalItemUpdate = (username) => {
     const form = new FormData()
     form.append("Username", username)
-    fetch("https://localhost:44353/Cart/TotalItems", {
+    fetch(`https://${window.location.host}/Cart/TotalItems`, {
         method: 'post',
         body: form,
     })

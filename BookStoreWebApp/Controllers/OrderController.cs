@@ -26,10 +26,16 @@ namespace BookStoreWebApp.Controllers
 
         [HttpGet]
         [Authorize(Roles = RoleName.USER)]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string status)
         {
             var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
-            var orders = orderRepository.GetOrdersByUserIdOrderByUpdateTimeDesc(user.Id);
+            if (string.IsNullOrEmpty(status))
+            {
+                var allOrders = orderRepository.GetOrdersByUserIdOrderByUpdateTimeDesc(user.Id);
+                return View(allOrders);
+            }
+            var orders = orderRepository.GetOrdersByUserIdAndStatusOrderByUpdateTimeDesc(user.Id, status);
+            TempData["Status"] = status;
             return View(orders);
         }
 

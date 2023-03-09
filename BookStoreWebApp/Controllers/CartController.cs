@@ -2,6 +2,7 @@
 using BookStoreWebApp.Models.Request;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -159,74 +160,83 @@ namespace BookStoreWebApp.Controllers
                 return RedirectToAction("Index");
             }
 
-            var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
-            var cart = cartRepository.GetCartProductByUserId(user.Id);
-
-            if(cart.Count <= 0 || cart[0].UserId != user.Id)
+            try
             {
-                return Forbid();
-            }
+                var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
+                var cart = cartRepository.GetCartProductByUserId(user.Id);
 
-            // CHECKOUT PROCESS
-
-            // Calculate total price
-
-            long total = 0;
-            foreach(var item in cart)
-            {
-                // Check Product quantity
-                var product = productRepository.GetById(item.ProductId);
-                if(product.Quantity < item.Quantity)
+                if (cart.Count <= 0 || cart[0].UserId != user.Id)
                 {
-                    TempData["Message"] = $"The book name {item.Product.Name} with quantity {item.Quantity} is not available. Try to select with less amount or delete it from cart";
-                    TempData["IsSuccess"] = "false";
-                    return RedirectToAction("Index");
+                    return Forbid();
                 }
-                total += item.Quantity.Value * (long) item.Product.Price.Value;
-            }
 
-            foreach(var item in cart)
-            {
-                // Decrease the product quantity
-                var product = productRepository.GetById(item.ProductId);
-                product.Quantity -= item.Quantity;
-                productRepository.Update(product);
-            }
+                // CHECKOUT PROCESS
 
-            // Create order summary
-            var order = new OrderSum()
-            {
-                Method = "DEFAULT",
-                DeliveryAddress = request.Address,
-                Total = total,
-                UserId = user.Id,
-                Phone = request.Phone,
-            };
-            orderRepository.Add(order);
+                // Calculate total price
 
-            // Create order detail
-            List<OrderDetail> orderDetails = new();
-            foreach (var item in cart)
-            {
-                var orderDetail = new OrderDetail()
+                long total = 0;
+                foreach (var item in cart)
                 {
-                    OrderId = order.Id,
-                    Price = item.Quantity * (long)item.Product.Price,
-                    Quantity = item.Quantity,
-                    ProductId = item.ProductId,
+                    // Check Product quantity
+                    var product = productRepository.GetById(item.ProductId);
+                    if (product.Quantity < item.Quantity)
+                    {
+                        TempData["Message"] = $"The book name {item.Product.Name} with quantity {item.Quantity} is not available. Try to select with less amount or delete it from cart";
+                        TempData["IsSuccess"] = "false";
+                        return RedirectToAction("Index");
+                    }
+                    total += item.Quantity.Value * (long)item.Product.Price.Value;
+                }
+
+                foreach (var item in cart)
+                {
+                    // Decrease the product quantity
+                    var product = productRepository.GetById(item.ProductId);
+                    product.Quantity -= item.Quantity;
+                    productRepository.Update(product);
+                }
+
+                // Create order summary
+                var order = new OrderSum()
+                {
+                    Method = "DEFAULT",
+                    DeliveryAddress = request.Address,
+                    Total = total,
+                    UserId = user.Id,
+                    Phone = request.Phone,
                 };
-                orderDetails.Add(orderDetail);
+                orderRepository.Add(order);
+
+                // Create order detail
+                List<OrderDetail> orderDetails = new();
+                foreach (var item in cart)
+                {
+                    var orderDetail = new OrderDetail()
+                    {
+                        OrderId = order.Id,
+                        Price = item.Quantity * (long)item.Product.Price,
+                        Quantity = item.Quantity,
+                        ProductId = item.ProductId,
+                    };
+                    orderDetails.Add(orderDetail);
+                }
+                orderDetailRepository.AddRange(orderDetails);
+
+                // Remove the cart
+                cartRepository.RemoveRangeCart(cart);
+
+                //Show message
+                TempData["Message"] = "You've checkout successfully, choose order history to see.";
+                TempData["IsSuccess"] = "true";
+
+                return RedirectToAction("Index", "Home");
+            } catch (Exception)
+            {
+                TempData["Message"] = "Something went wrong, try again.";
+                TempData["IsSuccess"] = "false";
+
+                return RedirectToAction("Index", "Home");
             }
-            orderDetailRepository.AddRange(orderDetails);
-
-            // Remove the cart
-            cartRepository.RemoveRangeCart(cart);
-
-            //Show message
-            TempData["Message"] = "You've checkout successfully, choose order history to see.";
-            TempData["IsSuccess"] = "true";
-
-            return RedirectToAction("Index", "Home");
         }
     }
 }

@@ -52,16 +52,27 @@ namespace BookStoreWebApp.Controllers
         }
 
         //--------------------------------------- PRODUCT ----------------------------------------
-        public IActionResult Index()
+        public IActionResult Index(string search)
         {
-            var products = productRepository.GetAll();
-            var productDTOs = new List<ProductForAdminDTO>();
-            foreach(var product in products)
+            if (string.IsNullOrEmpty(search))
+            {
+                var products = productRepository.GetAll();
+                var productDTOs = new List<ProductForAdminDTO>();
+                foreach (var product in products)
+                {
+                    int quantitySold = orderDetailRepository.CountProductQuantity(product.Id);
+                    productDTOs.Add(new ProductForAdminDTO(product, quantitySold));
+                }
+                return View(productDTOs);
+            }
+            var searchProducts = productRepository.GetAllByNameContain(search);
+            var searchProductDTOs = new List<ProductForAdminDTO>();
+            foreach(var product in searchProducts)
             {
                 int quantitySold = orderDetailRepository.CountProductQuantity(product.Id);
-                productDTOs.Add(new ProductForAdminDTO(product, quantitySold));
+                searchProductDTOs.Add(new ProductForAdminDTO(product, quantitySold));
             }
-            return View(productDTOs);
+            return View(searchProductDTOs);
         }
 
         //GET create page

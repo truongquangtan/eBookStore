@@ -33,6 +33,7 @@ namespace BookStoreWebApp.Controllers
                 return View(allOrders);
             }
             var orders = orderRepository.GetAllOrdersFilterByStatusByCreatedTime(status);
+            TempData["Status"] = status;
             return View(orders);
         }
 

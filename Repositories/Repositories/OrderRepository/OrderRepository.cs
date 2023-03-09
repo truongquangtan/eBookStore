@@ -60,5 +60,10 @@ namespace Repositories.Repositories.OrderRepository
             context.Orders.Update(updateOrderInfo);
             context.SaveChanges();
         }
+
+        public IEnumerable<OrderSum> GetOrdersByUserIdAndStatusOrderByUpdateTimeDesc(string userId, string status)
+        {
+            return context.Orders.Where(o => o.UserId == userId && o.Status == status).OrderByDescending(o => o.UpdateAt).ToList();
+        }
     }
 }

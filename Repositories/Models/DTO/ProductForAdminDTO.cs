@@ -16,7 +16,6 @@ namespace Repositories.Models.DTO
             this.Page = product.Page;
             this.Price = product.Price;
             this.Category = product.Category;
-            this.Reviews = product.Reviews;
             this.Author = product.Author;
             this.CategoryId = product.CategoryId;
             this.CreatedAt = product.CreatedAt;

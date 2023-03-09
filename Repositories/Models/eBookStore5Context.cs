@@ -23,8 +23,6 @@ namespace BookStoreWebApp.Models
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<ProductImage> ProductImages { get; set; }
-        public virtual DbSet<Review> Reviews { get; set; }
-        public virtual DbSet<ReviewImage> ReviewImages { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserRole> UserRoles { get; set; }
@@ -242,69 +240,6 @@ namespace BookStoreWebApp.Models
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__product_i__produ__38996AB5");
-            });
-
-            modelBuilder.Entity<Review>(entity =>
-            {
-                entity.ToTable("reviews");
-
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.Comment)
-                    .HasMaxLength(255)
-                    .HasColumnName("comment");
-
-                entity.Property(e => e.CreateAt)
-                    .HasColumnType("datetime")
-                    .HasColumnName("create_at");
-
-                entity.Property(e => e.IsDeleted)
-                    .HasColumnName("is_deleted")
-                    .HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.ProductId).HasColumnName("product_id");
-
-                entity.Property(e => e.Star).HasColumnName("star");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(45)
-                    .IsUnicode(false)
-                    .HasColumnName("user_id");
-
-                entity.HasOne(d => d.Product)
-                    .WithMany(p => p.Reviews)
-                    .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK__reviews__product__403A8C7D");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Reviews)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK__reviews__user_id__412EB0B6");
-            });
-
-            modelBuilder.Entity<ReviewImage>(entity =>
-            {
-                entity.ToTable("review_images");
-
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.CreateAt)
-                    .HasColumnType("datetime")
-                    .HasColumnName("create_at");
-
-                entity.Property(e => e.IsDeleted)
-                    .HasColumnName("is_deleted")
-                    .HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.ReviewId).HasColumnName("review_id");
-
-                entity.HasOne(d => d.Review)
-                    .WithMany(p => p.ReviewImages)
-                    .HasForeignKey(d => d.ReviewId)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK__review_im__revie__44FF419A");
             });
 
             modelBuilder.Entity<Role>(entity =>
