@@ -12,12 +12,25 @@
         <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:pb-24 lg:px-8">
             <div class="max-w-xl">
                 <h1 class="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">Order history</h1>
-                <p class="mt-2 text-sm text-gray-500">Check the status of recent orders, manage returns, and download invoices.</p>
+                <p class="mt-2 text-sm text-gray-500">Check the status of recent orders, manage returns, and change the status.</p>
             </div>
+
+            <form>
+                <div class="flex items-center mt-2">
+                    <label for="status" class="font-bold mr-8">Status: </label>
+                    <select name="status" class="p-2 bg-slate-100 rounded-lg mr-8">
+                        <option value="" class="p-2 bg-slate-50">ALL</option>
+                        <option value="@OrderStatus.CREATED" class="p-2 bg-slate-50">CREATED</option>
+                        <option value="@OrderStatus.ACCEPTED" class="p-2 bg-slate-50">ACCEPTED</option>
+                        <option value="@OrderStatus.SHIPPED" class="p-2 bg-slate-50">SHIPPED</option>
+                    </select>
+                    <button type="submit" asp-action="Index" class="bg-blue-400 hover:bg-blue-500 rounded-lg px-3 py-2 text-white">Filter</button>
+                </div>
+            </form>
 
             <div class="mt-16">
                 <h2 class="sr-only">Recent orders</h2>
-                <div class="max-h-[70vh] overflow-auto">
+                <div>
                     @foreach (var item in Model)
                     {
                         <div class="space-y-20 my-2">
@@ -38,7 +51,7 @@
                                         </div>
                                         <div class="flex justify-between pt-6 font-medium text-gray-900 sm:block sm:pt-0">
                                             <dt>Total amount</dt>
-                                            <dd class="sm:mt-1">@item.Total</dd>
+                                            <dd class="sm:mt-1">@item.Total.Value.ToString("#")</dd>
                                         </div>
                                         <div class="flex justify-between pt-6 sm:block sm:pt-0">
                                             <dt class="font-medium text-gray-900">Status</dt>

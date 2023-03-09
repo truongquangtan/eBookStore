@@ -12,10 +12,14 @@
     }).then(response => {
         return response.text();
     }).then(data => {
-        notifySuccess("You've added 1 item to cart.")
-        totalItemUpdate(username)
+        if (data == true) {
+            notifySuccess("You've added 1 item to cart.")
+            totalItemUpdate(username)
+        } else {
+            notifyError("This product is not available now, try others.")
+        }
     }).catch(e => {
-        notifyError("Something error, check again.")
+        notifyError("This product is not available now, try others.")
     })
 }
 
@@ -48,7 +52,12 @@ const totalItemUpdate = (username) => {
 }
 
 const changeNumOfItems = (newData) => {
-    $("#numOfItemsInCart").html(newData)
+    try {
+        parseInt(newData)
+        $("#numOfItemsInCart").html(newData)
+    } catch (Exception) {
+
+    }
 }
 
 const addQuantity = (itemId) => {

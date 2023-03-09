@@ -17,5 +17,6 @@ namespace Repositories.Repositories.OrderDetailRepository
 
         public void AddRange(IEnumerable<OrderDetail> orderDetails);
         public IEnumerable<OrderDetail> GetByOrderIdIncludeProduct(int id);
+        public int CountProductQuantity(int productId);
     }
 }

@@ -18,21 +18,23 @@ using BookStoreWebApp.Supporters.Constants;
 using Repositories.Repositories.ProductRepository;
 using Repositories.Repositories.CategoryRepository;
 using Repositories.Repositories.ProductImgRepository;
+using Repositories.Models.DTO;
+using Repositories.Repositories.OrderDetailRepository;
 
 namespace BookStoreWebApp.Controllers
 {
     [Authorize(Roles = RoleName.ADMIN)]
     public class ProductController : Controller
     {
-        private readonly eBookStore5Context context;
         private readonly IProductRepository productRepository;
         private readonly ICategoryRepository categoryRepository;
         private readonly IProductImgRepository productImgRepository;
+        private readonly IOrderDetailRepository orderDetailRepository;
         private readonly IWebHostEnvironment webHostEnvironment;
 
-        public ProductController(eBookStore5Context context, IWebHostEnvironment webHostEnvironment, IProductRepository productRepository, ICategoryRepository categoryRepository, IProductImgRepository productImgRepository)
+        public ProductController(IWebHostEnvironment webHostEnvironment, IProductRepository productRepository, ICategoryRepository categoryRepository, IProductImgRepository productImgRepository, IOrderDetailRepository orderDetailRepository)
         {
-            this.context = context;
+            this.orderDetailRepository = orderDetailRepository;
             this.webHostEnvironment = webHostEnvironment;
             this.productRepository = productRepository;
             this.categoryRepository = categoryRepository;
@@ -53,7 +55,13 @@ namespace BookStoreWebApp.Controllers
         public IActionResult Index()
         {
             var products = productRepository.GetAll();
-            return View(products);
+            var productDTOs = new List<ProductForAdminDTO>();
+            foreach(var product in products)
+            {
+                int quantitySold = orderDetailRepository.CountProductQuantity(product.Id);
+                productDTOs.Add(new ProductForAdminDTO(product, quantitySold));
+            }
+            return View(productDTOs);
         }
 
         //GET create page
@@ -206,7 +214,7 @@ namespace BookStoreWebApp.Controllers
 
         [Route("Product/DeleteProduct/{id}")]
         [HttpGet]
-        public async Task<IActionResult> DeleteProductConfirmed(int id)
+        public IActionResult DeleteProductConfirmed(int id)
         {
             try
             {

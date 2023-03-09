@@ -61,15 +61,15 @@ namespace BookStoreWebApp
             services.AddTransient<IProductImgRepository, ProductImgRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                // Cookie settings
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            //services.ConfigureApplicationCookie(options =>
+            //{
+            //    // Cookie settings
+            //    options.Cookie.HttpOnly = true;
+            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
 
-                options.LoginPath = "/Account/Login";
-                options.SlidingExpiration = true;
-            });
+            //    options.LoginPath = "/Account/Login";
+            //    options.SlidingExpiration = true;
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

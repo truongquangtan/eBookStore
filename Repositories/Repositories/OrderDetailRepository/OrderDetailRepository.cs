@@ -30,6 +30,17 @@ namespace Repositories.Repositories.OrderDetailRepository
             context.SaveChanges();
         }
 
+        public int CountProductQuantity(int productId)
+        {
+            var orderDetails = context.OrderDetails.Where(o => o.ProductId == productId).ToList();
+            int count = 0;
+            foreach (var orderDetail in orderDetails)
+            {
+                count += orderDetail.Quantity.Value;
+            }
+            return count;
+        }
+
         public void Delete(OrderDetail orderDetail)
         {
             context.OrderDetails.Remove(orderDetail);

@@ -32,7 +32,7 @@ namespace BookStoreWebApp.Supporters.CustomIdentityProvider
                 UserId = user.Id,
                 RoleName = roleName,
             });
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IdentityResult> CreateAsync(User user, CancellationToken cancellationToken)

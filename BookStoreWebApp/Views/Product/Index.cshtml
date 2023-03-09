@@ -1,14 +1,12 @@
 ﻿@using BookStoreWebApp.Models.DTO
 @using Newtonsoft.Json
 
-@model List<BookStoreWebApp.Models.Product>;
+@model List<Repositories.Models.DTO.ProductForAdminDTO>;
 
 @{
     ViewData["Title"] = $"Admin Page";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     string user = (string)TempData["User"];
-    var rawMessage = (string)TempData["Message"];
-    MessageDTO message = String.IsNullOrEmpty(rawMessage) ? null : JsonConvert.DeserializeObject<MessageDTO>((string)TempData["Message"]);
 }
 <!--Modal-->
 <div class="relative z-10 hidden"  aria-labelledby="modal-title" role="dialog" aria-modal="true" id="modal">
@@ -60,31 +58,19 @@
         </div>
     </a>
 </div>
-@if (message != null && message.MessageType == MessageType.Success)
-{
-    <div class="px-10 text-md text-green-500">@message.Message</div>
-}
-@if (message != null && message.MessageType == MessageType.Error)
-{
-    <div class="px-10 text-md text-red-500">@message.Message</div>
-}
-@if (message != null && message.MessageType == MessageType.Warning)
-{
-    <div class="px-10 text-md text-yellow-800">@message.Message</div>
-}
 <table class="w-full border-b border-gray-200">
     <thead>
         <tr class="text-sm font-medium text-gray-700 border-b border-gray-200">
-            <td class="pl-10">
+            <td class="pl-10 w-[25%]">
                 <div class="flex items-center gap-x-4">
                     <span>Product Name</span>
                 </div>
             </td>
-            <td class="py-4 px-4 text-center">Pricing</td>
-            <td class="py-4 px-4 text-center">Quantity</td>
-            <td class="py-4 px-4 text-center">Category</td>
-            <td class="py-4 px-4 text-center">Created At</td>
-            <td class="py-4 pr-10 pl-4">Action</td>
+            <td class="py-4 px-4 text-center w-[15%]">Pricing</td>
+            <td class="py-4 px-4 text-center w-[20%]">Quantity</td>
+            <td class="py-4 px-4 text-center w-[15%]">Category</td>
+            <td class="py-4 px-4 text-center w-[15%]">Created At</td>
+            <td class="py-4 pr-10 pl-4 w-[10%]">Action</td>
         </tr>
     </thead>
 
@@ -94,7 +80,7 @@
         {
             <tr class="hover:bg-gray-100 transition-colors group">
                 <td class="flex gap-x-4 items-center py-4 pl-10">
-                    <div class="w-20 h-20 aspect-[3/2] rounded-lg object-cover object-top border border-gray-200">
+                    <div class="w-20 h-20 aspect-[3/2] rounded-lg object-fit object-top border border-gray-200">
                         <img src="@("/images/"+ product.ProductImages.FirstOrDefault().Link)" alt="productImage" />
                     </div>
                     <div>
@@ -102,8 +88,11 @@
                         <div class="font-medium text-gray-400">@product.Author</div>
                     </div>
                 </td>
-                <td class="font-medium text-center">@product.Price VNĐ</td>
-                <td class="font-medium text-center">@product.Quantity</td>
+                <td class="font-medium text-center">@product.Price.Value.ToString("#") VNĐ</td>
+                <td class="font-medium text-center">
+                    <div class="flex gap-8 bg-blue-100 rounded-xl p-2"><span class="font-bold">Available</span><span class="text-blue-500">@product.Quantity</span></div>
+                    <div class="flex gap-8 bg-blue-100 rounded-xl p-2 mt-1"><span class="font-bold">Sold</span><span class="text-green-500">@product.QuantitySold</span></div>
+                </td>
                 <td class="text-center">
                     @(product.Category == null ? "" : product.Category.Name)
                 </td>

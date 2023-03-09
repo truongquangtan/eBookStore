@@ -25,9 +25,14 @@ namespace BookStoreWebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string status)
         {
-            var orders = orderRepository.GetAllOrdersByCreatedTime();
+            if (string.IsNullOrEmpty(status))
+            {
+                var allOrders = orderRepository.GetAllOrdersByCreatedTime();
+                return View(allOrders);
+            }
+            var orders = orderRepository.GetAllOrdersFilterByStatusByCreatedTime(status);
             return View(orders);
         }
 

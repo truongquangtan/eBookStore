@@ -35,6 +35,11 @@ namespace Repositories.Repositories.OrderRepository
             return context.Orders.OrderByDescending(o => o.OrderAt).ToList();
         }
 
+        public IEnumerable<OrderSum> GetAllOrdersFilterByStatusByCreatedTime(string status)
+        {
+            return context.Orders.Where(o => o.Status == status).OrderByDescending(o => o.OrderAt).ToList();
+        }
+
         public IEnumerable<OrderSum> GetOrdersByUserIdOrderByUpdateTimeDesc(string userId)
         {
             return context.Orders.Where(o => o.UserId == userId).OrderByDescending(o => o.UpdateAt).ToList();

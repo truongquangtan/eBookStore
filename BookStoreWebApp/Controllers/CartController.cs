@@ -55,6 +55,14 @@ namespace BookStoreWebApp.Controllers
         [Route("add-to-cart")]
         public bool AddToCart(AddToCardRequest request)
         {
+            var product = productRepository.GetById(request.ProductId);
+            if (product == null || product.IsDeleted == true || product.Quantity == 0)
+            {
+                TempData["Message"] = "Cannot add this product to cart because this is not available, try other product";
+                TempData["IsSuccess"] = "false";
+                return false;
+            }
+
             var user = userRepository.GetUserByUsername(HttpContext.User.Identity.Name);
             //Find old cart item
             var cartItem = cartRepository.GetCartByProductIdAndUserId(request.ProductId, user.Id);
