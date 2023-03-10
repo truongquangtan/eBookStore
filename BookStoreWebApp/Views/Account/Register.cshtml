@@ -26,16 +26,16 @@
 
     <!-- Login Form -->
     <form asp-controller="Account" asp-action="Register" method="POST">
-      <input type="text" asp-for="Mail" class="fadeIn second" placeholder="Enter your mail"><br/>
+      <input type="text" asp-for="Mail" class="fadeIn second" placeholder="Enter your mail*"><br/>
       <span asp-validation-for="Mail" class="text-danger"></span>
       <input type="password" asp-for="Password" class="fadeIn third" placeholder="Enter your password*"><br/>
       <span asp-validation-for="Password" class="text-danger"></span>
       <input type="password" asp-for="ConfirmPassword" class="fadeIn third" placeholder="Confirm your password*"><br/>
       <span class="text-danger">@TempData["confirmPasswordError"]</span>
       <hr />
-      <input type="text" asp-for="DisplayName" class="fadeIn third" placeholder="Enter your full name*"><br/>
+      <input type="text" asp-for="DisplayName" class="fadeIn third" placeholder="Enter your display name"><br/>
       <span asp-validation-for="DisplayName" class="text-danger"></span>
-      <input type="text" asp-for="Address" class="fadeIn third" placeholder="Enter your student ID*"><br/>
+      <input type="text" asp-for="Address" class="fadeIn third" placeholder="Enter your address*"><br/>
       <span asp-validation-for="Address" class="text-danger"></span>
       <input type="text" asp-for="Phone" class="fadeIn third" placeholder="Nhập số điện thoại của bạn nhé"><br/>
       <span asp-validation-for="Phone" class="text-danger"></span>
